@@ -454,7 +454,25 @@ class WebsiteDownloader:
     def process(self):
         with sync_playwright() as p:
             self.log("🚀 Iniciando navegador...")
-            browser = p.chromium.launch(headless=True)
+            # Launch with reduced memory footprint
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    '--disable-dev-shm-usage',  # Overcome limited resource problems
+                    '--no-sandbox',  # Required for Docker
+                    '--disable-setuid-sandbox',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-background-networking',
+                    '--disable-default-apps',
+                    '--disable-sync',
+                    '--disable-translate',
+                    '--metrics-recording-only',
+                    '--mute-audio',
+                    '--no-first-run',
+                    '--safebrowsing-disable-auto-update',
+                ]
+            )
             
             context = browser.new_context(
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -491,9 +509,15 @@ class WebsiteDownloader:
             
             self.log(f"🌐 Carregando {self.url}...")
             try:
-                page.goto(self.url, wait_until='networkidle', timeout=120000)
+                # Try with a shorter timeout and less strict wait condition
+                page.goto(self.url, wait_until='load', timeout=60000)
+                self.log("✓ Página carregada (load)")
+                # Wait a bit more for additional resources
+                page.wait_for_timeout(3000)
+                self.log("✓ Recursos adicionais carregados")
             except Exception as e:
-                self.log(f"⚠️ Aviso de carregamento: {str(e)[:50]}...")
+                self.log(f"⚠️ Aviso de carregamento: {str(e)[:100]}")
+                self.log("⚠️ Tentando continuar mesmo assim...")
             
             self.base_url = page.url
             

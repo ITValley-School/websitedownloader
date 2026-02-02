@@ -19,5 +19,5 @@ RUN mkdir -p downloads
 # Expose port (Render will set $PORT)
 EXPOSE 8080
 
-# Start gunicorn
-CMD gunicorn app:app --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 300 --access-logfile - --error-logfile -
+# Start gunicorn with single worker to reduce memory usage
+CMD gunicorn app:app --bind 0.0.0.0:${PORT:-8080} --workers 1 --threads 2 --timeout 300 --worker-class gthread --access-logfile - --error-logfile -
