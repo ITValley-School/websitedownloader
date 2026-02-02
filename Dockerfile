@@ -16,8 +16,12 @@ COPY . .
 # Create downloads directory
 RUN mkdir -p downloads
 
-# Expose port (Render will set $PORT)
+# Copy and set entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Expose port (Railway/Render will set $PORT)
 EXPOSE 8080
 
-# Start gunicorn with single worker to reduce memory usage
-CMD gunicorn app:app --bind 0.0.0.0:${PORT:-8080} --workers 1 --threads 2 --timeout 300 --worker-class gthread --access-logfile - --error-logfile -
+# Use entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]

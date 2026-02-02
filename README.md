@@ -17,11 +17,6 @@ Uma ferramenta web para baixar réplicas completas de sites, incluindo conteúdo
 
 Veja o arquivo [DEPLOY.md](DEPLOY.md) para instruções completas de deploy no Render, Railway, ou outros serviços.
 
-**Deploy rápido no Render**:
-1. Faça push do código para GitHub
-2. Conecte o repositório no [render.com](https://render.com)
-3. Configure domínio customizado
-4. Deploy automático a cada push!
 
 ## 🛠️ Desenvolvimento Local
 
