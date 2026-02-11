@@ -1,5 +1,11 @@
-# Use Python image with Playwright dependencies
-FROM mcr.microsoft.com/playwright/python:v1.41.0-jammy
+# Use official Python base image
+FROM python:3.11-slim-bookworm
+
+# Install system dependencies for Playwright
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -9,6 +15,9 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Playwright browsers and dependencies
+RUN playwright install --with-deps chromium
 
 # Copy application files
 COPY . .
